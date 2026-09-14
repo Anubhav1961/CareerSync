@@ -47,4 +47,4 @@ The list also has a view toggle for table or card layout, and a reload button th
 
 ## How do I export my jobs to CSV?
 
-Click **Export** in the Jobs card header. Your jobs download as a CSV file named `jobsync-YYYY-MM-DD.csv`. The export covers your jobs, not the reference lists behind them — for a complete, restorable copy of everything including resumes, tasks and activities, use **Settings → Data** instead.
+Click **Export** in the Jobs card header. Your jobs download as a CSV file named `careersync-YYYY-MM-DD.csv`. The export covers your jobs, not the reference lists behind them — for a complete, restorable copy of everything including resumes, tasks and activities, use **Settings → Data** instead.

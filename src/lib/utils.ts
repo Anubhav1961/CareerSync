@@ -40,7 +40,10 @@ export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function handleError(error: unknown, msg = "Server Error.") {
+export function handleError(
+  error: unknown,
+  msg = "Server Error."
+): { success: false; message: string } {
   console.error(error, msg);
   if (error instanceof Error) {
     if (error.message === "fetch failed") {

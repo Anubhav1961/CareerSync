@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, MapPin, PlusCircle, StickyNote } from "lucide-react";
+import { Calendar, MapPin, PlusCircle, StickyNote, GraduationCap, BellRing } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
@@ -28,32 +28,38 @@ export function JobCard({
   const notesCount = job._count?.Notes ?? 0;
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border bg-card p-4">
+    <div className="flex flex-col gap-3 rounded-lg border bg-card p-4 hover:shadow-md transition-shadow">
       <div className="flex items-start gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt="Company logo"
           className="h-10 w-10 min-w-10 rounded-md object-cover"
-          src={job.Company?.logoUrl || "/images/jobsync-logo.svg"}
+          src={job.Company?.logoUrl || "/images/careersync-logo.svg"}
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "/images/jobsync-logo.svg";
+            e.currentTarget.src = "/images/careersync-logo.svg";
           }}
         />
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <Link
               href={`/dashboard/myjobs/${job?.id}`}
-              className="truncate font-semibold"
+              className="truncate font-semibold hover:underline"
             >
               {job.JobTitle?.label}
             </Link>
+            {job.jobType === "I" && (
+              <Badge variant="outline" className="border-primary/40 text-primary text-[10px] px-1 py-0 h-4 font-medium gap-0.5">
+                <GraduationCap className="h-2.5 w-2.5" />
+                Intern
+              </Badge>
+            )}
             {notesCount > 0 && (
               <Badge
                 variant="secondary"
-                className="h-5 shrink-0 px-1.5 py-0 text-xs"
+                className="h-4 shrink-0 px-1.5 py-0 text-[10px]"
               >
-                <StickyNote className="mr-0.5 h-3 w-3" />
+                <StickyNote className="mr-0.5 h-2.5 w-2.5" />
                 {notesCount}
               </Badge>
             )}
@@ -61,6 +67,28 @@ export function JobCard({
           <p className="truncate text-sm text-muted-foreground">
             {job.Company?.label}
           </p>
+
+          {/* Follow-up and Interview chips on Card */}
+          <div className="flex items-center gap-1 flex-wrap pt-1">
+            {job.followUpDate && (
+              <Badge
+                variant={new Date(job.followUpDate) < new Date() ? "destructive" : "outline"}
+                className="text-[10px] px-1.5 py-0 h-4 font-normal"
+              >
+                <BellRing className="h-2.5 w-2.5 mr-1" />
+                {new Date(job.followUpDate) < new Date() ? "Overdue" : format(new Date(job.followUpDate), "MMM d")}
+              </Badge>
+            )}
+            {job.Interview && job.Interview.length > 0 && (
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-1.5 py-0 h-4 font-normal bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"
+              >
+                <Calendar className="h-2.5 w-2.5 mr-1" />
+                {job.Interview[0].round || "Interview"}
+              </Badge>
+            )}
+          </div>
         </div>
         {job.matchScore != null ? (
           <CircularScore score={job.matchScore} size="sm" animate={false} />

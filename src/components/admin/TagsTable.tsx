@@ -65,12 +65,13 @@ function TagsTable({ tags, reloadTags }: TagsTableProps) {
 
   const deleteTag = async (tagId: string | undefined) => {
     if (!tagId) return;
-    const { success, message } = await deleteTagById(tagId);
-    if (success) {
+    const res = await deleteTagById(tagId);
+    if (res.success) {
       toastSuccess("Skill tag has been deleted successfully");
       reloadTags();
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete skill tag";
+      toastError(errorMsg);
     }
   };
 

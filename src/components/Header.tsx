@@ -12,6 +12,7 @@ import {
 import { SIDEBAR_LINKS } from "@/lib/constants";
 import SidebarToggle from "./SidebarToggle";
 import { AgentChatTrigger } from "./AgentChatTrigger";
+import { ThemeToggle } from "./ThemeToggle";
 
 async function Header() {
   return (
@@ -32,7 +33,7 @@ async function Header() {
                 className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
               >
                 <Briefcase className="h-5 w-5 transition-all group-hover:scale-110" />
-                <span className="sr-only">JobSync</span>
+                <span className="sr-only">CareerSync</span>
               </Link>
             </SheetClose>
             {SIDEBAR_LINKS.map((item) => {
@@ -56,20 +57,15 @@ async function Header() {
         </SheetContent>
       </Sheet>
       <SidebarToggle />
-      <h1 className="font-semibold">
-        JobSync<span className="hidden sm:inline"> - Job Search Assistant</span>
-      </h1>
-      <div className="relative ml-auto flex-1 md:grow-0">
-        {/* <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          id="search"
-          type="search"
-          placeholder="Search..."
-          className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-        /> */}
+      <div className="flex items-center gap-2">
+        <h1 className="font-semibold text-base tracking-tight">
+          CareerSync<span className="hidden sm:inline text-muted-foreground font-normal"> · Career Platform</span>
+        </h1>
       </div>
-
-      <AgentChatTrigger />
+      <div className="relative ml-auto flex items-center gap-2">
+        <ThemeToggle />
+        <AgentChatTrigger />
+      </div>
     </header>
   );
 }

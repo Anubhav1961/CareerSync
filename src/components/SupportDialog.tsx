@@ -30,14 +30,9 @@ export function SupportDialog({
         <DialogHeader>
           <DialogTitle>Support</DialogTitle>
           <DialogDescription>
-            <a
-              href="https://github.com/Gsync/jobsync/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              https://github.com/Gsync/jobsync/issues
-            </a>
+            <p className="text-sm text-muted-foreground">
+              CareerSync Application &amp; Internship Tracker
+            </p>
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -58,18 +53,13 @@ export function SupportDialog({
             )}
           </div>
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold">Copyright</h3>
+            <h3 className="text-sm font-semibold">Platform</h3>
             <p className="text-sm text-muted-foreground">
-              © {currentYear} JobSync. All rights reserved.
+              © {currentYear} CareerSync. All rights reserved.
             </p>
-            <a
-              href="https://jobsync.ca/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-primary hover:underline"
-            >
-              https://jobsync.ca/
-            </a>
+            <p className="text-xs text-muted-foreground">
+              Built for engineering job &amp; internship search management.
+            </p>
           </div>
         </div>
       </DialogContent>

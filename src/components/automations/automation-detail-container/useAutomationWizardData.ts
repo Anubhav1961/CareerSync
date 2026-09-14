@@ -15,7 +15,7 @@ export function useAutomationWizardData() {
   );
 
   useEffect(() => {
-    getResumeList(1, 100, APP_CONSTANTS.MIN_RESUME_SECTIONS_FOR_SELECTION).then(
+    getResumeList(1, 100, "", APP_CONSTANTS.MIN_RESUME_SECTIONS_FOR_SELECTION).then(
       (result) => {
         if (result?.data) {
           setResumes(

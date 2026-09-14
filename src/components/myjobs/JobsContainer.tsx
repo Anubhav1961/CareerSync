@@ -55,14 +55,25 @@ function JobsContainer({
     locationFilter,
     sourceFilter,
     appliedFilter,
+    jobTypeFilter,
+    urgencyFilter,
+    sortBy,
     companyLabel,
     titleLabel,
     locationLabel,
     sourceLabel,
+    jobTypeLabel,
+    hasActiveFilters,
     clearCompanyFilter,
     clearTitleFilter,
     clearLocationFilter,
     clearSourceFilter,
+    clearJobTypeFilter,
+    clearUrgencyFilter,
+    clearAllFilters,
+    onSelectJobType,
+    onSelectUrgency,
+    onSelectSortBy,
   } = useJobFilters({ companies, titles, locations, sources });
 
   const {
@@ -85,6 +96,9 @@ function JobsContainer({
     titleFilter,
     locationFilter,
     sourceFilter,
+    jobTypeFilter,
+    urgencyFilter,
+    sortBy,
   });
 
   const onDeleteJob = async (jobId: string) => {
@@ -107,12 +121,13 @@ function JobsContainer({
   };
 
   const onChangeJobStatus = async (jobId: string, jobStatus: JobStatus) => {
-    const { success, message } = await updateJobStatus(jobId, jobStatus);
-    if (success) {
+    const res = await updateJobStatus(jobId, jobStatus);
+    if (res.success) {
       router.refresh();
       toastSuccess(`Job has been updated successfully`);
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to update job status";
+      toastError(errorMsg);
     }
     reloadJobs();
   };
@@ -143,6 +158,14 @@ function JobsContainer({
           onClearLocationFilter={clearLocationFilter}
           sourceLabel={sourceLabel}
           onClearSourceFilter={clearSourceFilter}
+          jobTypeFilter={jobTypeFilter}
+          onSelectJobType={onSelectJobType}
+          urgencyFilter={urgencyFilter}
+          onSelectUrgency={onSelectUrgency}
+          sortBy={sortBy}
+          onSelectSortBy={onSelectSortBy}
+          hasActiveFilters={hasActiveFilters}
+          onClearAllFilters={clearAllFilters}
           onReload={() => loadJobs(1, filterKey, searchTerm || undefined)}
           searchTerm={searchTerm}
           onSearchTermChange={setSearchTerm}

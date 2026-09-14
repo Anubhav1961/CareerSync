@@ -33,9 +33,20 @@ export async function getUserApiKeys(): Promise<{
       },
     });
 
+    type ApiKeyRow = {
+      id: string;
+      provider: string;
+      last4: string;
+      iv: string;
+      encryptedKey: string;
+      label: string | null;
+      createdAt: Date;
+      lastUsedAt: Date | null;
+    };
+
     return {
       success: true,
-      data: keys.map((k) => {
+      data: (keys as ApiKeyRow[]).map((k) => {
         const isSensitive = k.iv !== "";
         return {
           id: k.id,

@@ -141,6 +141,7 @@ export function AddJob({
       const resumes = await getResumeList(
         1,
         APP_CONSTANTS.RECORDS_PER_PAGE,
+        "",
         APP_CONSTANTS.MIN_RESUME_SECTIONS_FOR_SELECTION,
       );
       setResumes(resumes.data);

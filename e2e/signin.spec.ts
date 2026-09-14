@@ -7,9 +7,9 @@ import { login } from "./fixtures";
 test("Signin page has title", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page).toHaveTitle("Sign In | JobSync");
+  await expect(page).toHaveTitle("Sign In | CareerSync");
 
-  await expect(page.getByRole("heading", { name: "JobSync" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "CareerSync" })).toBeVisible();
 
   await expect(
     page.getByRole("heading", { name: "Welcome back" }),

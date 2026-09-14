@@ -276,11 +276,18 @@ model JobSource {
 }
 
 model Interview {
-  id           String    @id @default(uuid())
-  createdAt    DateTime
-  jobId        String
-  job          Job?      @relation(fields: [jobId], references: [id])
-  interviewers Contact[]
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  jobId         String
+  job           Job?      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  round         String?
+  interviewDate DateTime?
+  location      String?
+  status        String?   @default("scheduled")
+  notes         String?
+  feedback      String?
+  interviewers  Contact[]
 }
 
 model Job {
@@ -313,6 +320,10 @@ model Job {
   coverLetterId String?
   Notes         Note[]
   tags        Tag[]
+
+  // Follow-up reminders
+  followUpDate  DateTime?
+  followUpNotes String?
 
   // Automation discovery fields
   automationId    String?

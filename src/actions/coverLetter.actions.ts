@@ -5,6 +5,7 @@ import { handleError } from "@/lib/utils";
 import { requireUser } from "./shared";
 import { APP_CONSTANTS } from "@/lib/constants";
 import { buildCoverLetterTitle } from "@/lib/coverLetterTitle";
+import { Prisma } from "@prisma/client";
 
 // html:false escapes raw HTML in the model output before it is ever stored,
 // so the saved document is the same shape a hand-written letter produces.

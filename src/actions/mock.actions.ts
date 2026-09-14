@@ -34,25 +34,26 @@ export const generateMockActivitiesAction = async (): Promise<any> => {
       );
     }
 
-    // Check which activity types already exist
+    // Check which    // Find existing activity types for this user matching mock values
     const existingTypes = await prisma.activityType.findMany({
       where: {
+        createdBy: user.id,
         value: {
-          in: mockActivityTypes.map((t) => t.value),
+          in: mockActivityTypes.map((t: { value: string }) => t.value),
         },
       },
     });
 
-    const existingValues = new Set(existingTypes.map((t) => t.value));
+    const existingValues = new Set(existingTypes.map((t: { value: string }) => t.value));
 
     // Create only the activity types that don't exist
     const typesToCreate = mockActivityTypes.filter(
-      (t) => !existingValues.has(t.value),
+      (t: { value: string }) => !existingValues.has(t.value),
     );
 
     if (typesToCreate.length > 0) {
       await prisma.activityType.createMany({
-        data: typesToCreate.map((t) => ({
+        data: typesToCreate.map((t: { label: string; value: string }) => ({
           label: t.label,
           value: t.value,
           createdBy: user.id,
@@ -64,7 +65,7 @@ export const generateMockActivitiesAction = async (): Promise<any> => {
     const activityTypes = await prisma.activityType.findMany({
       where: {
         value: {
-          in: mockActivityTypes.map((t) => t.value),
+          in: mockActivityTypes.map((t: { value: string }) => t.value),
         },
       },
     });
@@ -73,7 +74,7 @@ export const generateMockActivitiesAction = async (): Promise<any> => {
     const mockActivities = generateMockActivities(user.id, 10, 25);
 
     // Create a map of activity type values to IDs
-    const typeMap = new Map(activityTypes.map((t) => [t.value, t.id]));
+    const typeMap = new Map(activityTypes.map((t: { value: string; id: string }) => [t.value, t.id]));
 
     // Create activities in the database
     const createdActivities = await Promise.all(
@@ -135,7 +136,7 @@ export const clearMockActivitiesAction = async (): Promise<any> => {
     const deleteResult = await prisma.activity.deleteMany({
       where: {
         id: {
-          in: mockActivities.map((a) => a.id),
+          in: mockActivities.map((a: { id: string }) => a.id),
         },
       },
     });
@@ -163,7 +164,7 @@ export const generateMockProfileDataAction = async (): Promise<any> => {
 
     // 1. Upsert companies
     await Promise.all(
-      mockCompanies.map((c) =>
+      mockCompanies.map((c: { label: string; value: string }) =>
         prisma.company.upsert({
           where: { value_createdBy: { value: c.value, createdBy: user.id } },
           update: {},
@@ -174,15 +175,15 @@ export const generateMockProfileDataAction = async (): Promise<any> => {
 
     const companies = await prisma.company.findMany({
       where: {
-        value: { in: mockCompanies.map((c) => c.value) },
+        value: { in: mockCompanies.map((c: { value: string }) => c.value) },
         createdBy: user.id,
       },
     });
-    const companyMap = new Map(companies.map((c) => [c.value, c.id]));
+    const companyMap = new Map(companies.map((c: { value: string; id: string }) => [c.value, c.id]));
 
     // 2. Upsert locations
     await Promise.all(
-      mockLocations.map((l) =>
+      mockLocations.map((l: { label: string; value: string; stateProv: string | null; country: string | null }) =>
         prisma.location.upsert({
           where: { value_createdBy: { value: l.value, createdBy: user.id } },
           update: {},
@@ -199,15 +200,15 @@ export const generateMockProfileDataAction = async (): Promise<any> => {
 
     const locations = await prisma.location.findMany({
       where: {
-        value: { in: mockLocations.map((l) => l.value) },
+        value: { in: mockLocations.map((l: { value: string }) => l.value) },
         createdBy: user.id,
       },
     });
-    const locationMap = new Map(locations.map((l) => [l.value, l.id]));
+    const locationMap = new Map(locations.map((l: { value: string; id: string }) => [l.value, l.id]));
 
     // 3. Upsert job titles
     await Promise.all(
-      mockJobTitles.map((jt) =>
+      mockJobTitles.map((jt: { label: string; value: string }) =>
         prisma.jobTitle.upsert({
           where: { value_createdBy: { value: jt.value, createdBy: user.id } },
           update: {},
@@ -218,11 +219,11 @@ export const generateMockProfileDataAction = async (): Promise<any> => {
 
     const jobTitles = await prisma.jobTitle.findMany({
       where: {
-        value: { in: mockJobTitles.map((jt) => jt.value) },
+        value: { in: mockJobTitles.map((jt: { value: string }) => jt.value) },
         createdBy: user.id,
       },
     });
-    const jobTitleMap = new Map(jobTitles.map((jt) => [jt.value, jt.id]));
+    const jobTitleMap = new Map(jobTitles.map((jt: { value: string; id: string }) => [jt.value, jt.id]));
 
     // 4. Find or create profile for the user
     let profile = await prisma.profile.findFirst({
@@ -361,14 +362,14 @@ export const clearMockProfileDataAction = async (): Promise<any> => {
       },
     });
 
-    const resumeIds = mockResumes.map((r) => r.id);
-    const sectionIds = mockResumes.flatMap((r) =>
-      r.ResumeSections.map((s) => s.id),
+    const resumeIds = mockResumes.map((r: { id: string }) => r.id);
+    const sectionIds = mockResumes.flatMap((r: { ResumeSections: Array<{ id: string; summaryId: string | null }> }) =>
+      r.ResumeSections.map((s: { id: string }) => s.id),
     );
     const summaryIds = mockResumes
-      .flatMap((r) => r.ResumeSections)
-      .filter((s) => s.summaryId)
-      .map((s) => s.summaryId!);
+      .flatMap((r: { ResumeSections: Array<{ id: string; summaryId: string | null }> }) => r.ResumeSections)
+      .filter((s: { summaryId: string | null }) => s.summaryId)
+      .map((s: { summaryId: string | null }) => s.summaryId!);
 
     // Delete child records first to satisfy FK constraints
     await prisma.workExperience.deleteMany({
@@ -515,7 +516,7 @@ export const generateMockJobsAction = async (): Promise<any> => {
       return { success: false, message: "No job sources found. Please add at least one job source first." };
     }
 
-    const statusMap = new Map(statuses.map((s) => [s.value, s.id]));
+    const statusMap = new Map<string, string>(statuses.map((s: { value: string; id: string }) => [s.value, s.id]));
     const totalJobs = getRandomInt(30, 40);
     const now = new Date();
     const mockWorkplaceTypes = ["REMOTE", "HYBRID", "ONSITE", null];
@@ -527,7 +528,7 @@ export const generateMockJobsAction = async (): Promise<any> => {
       const jobSource = jobSources[getRandomInt(0, jobSources.length - 1)];
       const statusId = pickWeightedStatus(statusMap);
       const statusValue =
-        statuses.find((s) => s.id === statusId)?.value ?? "draft";
+        statuses.find((s: { id: string; value: string }) => s.id === statusId)?.value ?? "draft";
 
       const daysAgo = getRandomInt(0, 30);
       const createdAt = subDays(now, daysAgo);
@@ -603,7 +604,7 @@ export const clearMockJobsAction = async (): Promise<any> => {
       select: { id: true },
     });
 
-    const jobIds = mockJobs.map((j) => j.id);
+    const jobIds = mockJobs.map((j: { id: string }) => j.id);
 
     if (jobIds.length === 0) {
       return { success: true, message: "No mock jobs found to delete." };
@@ -615,7 +616,7 @@ export const clearMockJobsAction = async (): Promise<any> => {
 
     // Disconnect tags (M2M)
     await Promise.all(
-      jobIds.map((id) =>
+      jobIds.map((id: string) =>
         prisma.job.update({
           where: { id },
           data: { tags: { set: [] } },

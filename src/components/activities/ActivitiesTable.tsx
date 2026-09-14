@@ -52,12 +52,13 @@ function ActivitiesTable({
   );
 
   const deleteActivity = async () => {
-    const { success, message } = await deleteActivityById(activityIdToDelete!);
-    if (success) {
+    const res = await deleteActivityById(activityIdToDelete!);
+    if (res.success) {
       toastSuccess(`Activity has been deleted successfully`);
       reloadActivities();
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete activity";
+      toastError(errorMsg);
     }
   };
   return (

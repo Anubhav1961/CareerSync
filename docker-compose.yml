@@ -1,7 +1,11 @@
 services:
   app:
-    image: ghcr.io/gsync/jobsync:latest
-    container_name: jobsync_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: careersync:latest
+    pull_policy: build
+    container_name: careersync_app
     ports:
       - "3737:3737"
     environment:

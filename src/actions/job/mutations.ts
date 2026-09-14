@@ -30,6 +30,8 @@ export const addJob = async (
       resume,
       coverLetter,
       tags,
+      followUpDate,
+      followUpNotes,
     } = data;
 
     const job = await createJobRecord({
@@ -50,6 +52,8 @@ export const addJob = async (
       resumeId: resume,
       coverLetterId: coverLetter,
       tagIds: tags ?? [],
+      followUpDate: followUpDate || null,
+      followUpNotes: followUpNotes || null,
     });
     revalidatePath("/dashboard");
     return { success: true, data: job };
@@ -86,6 +90,8 @@ export const updateJob = async (
       resume,
       coverLetter,
       tags,
+      followUpDate,
+      followUpNotes,
     } = data;
 
     const tagIds = tags ?? [];
@@ -112,6 +118,8 @@ export const updateJob = async (
         applied,
         resumeId: resume,
         coverLetterId: coverLetter,
+        followUpDate: followUpDate !== undefined ? followUpDate : undefined,
+        followUpNotes: followUpNotes !== undefined ? followUpNotes : undefined,
         tags: { set: tagIds.map((id) => ({ id })) },
       },
     });

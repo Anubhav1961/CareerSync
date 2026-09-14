@@ -48,7 +48,7 @@ export async function handleFindJob(
     // list so an agent that wants to keep them can echo them back, instead
     // of silently dropping them by omission.
     const tagsList = detail?.tags?.length
-      ? detail.tags.map((t) => t.label).join(", ")
+      ? detail.tags.map((t: { label: string }) => t.label).join(", ")
       : "none";
 
     const text =

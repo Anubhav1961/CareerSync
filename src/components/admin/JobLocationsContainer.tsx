@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardTitle } from "../ui/card";
 import { ResponsiveCardHeader } from "../ResponsiveCardHeader";
 import { APP_CONSTANTS } from "@/lib/constants";
-import { JobTitle } from "@prisma/client";
+import { Location } from "@prisma/client";
 import JobLocationsTable from "./JobLocationsTable";
 import { getJobLocationsList } from "@/actions/jobLocation.actions";
 import Loading from "../Loading";
@@ -12,7 +12,7 @@ import { RecordsCount } from "../RecordsCount";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
 function JobLocationsContainer() {
-  const [locations, setLocations] = useState<JobTitle[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [totalJobLocations, setTotalJobLocations] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [initialLoading, setInitialLoading] = useState<boolean>(false);

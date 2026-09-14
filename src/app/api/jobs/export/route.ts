@@ -19,6 +19,7 @@ const FIELDS: string[] = [
   "Location",
   "JobSource",
   "Status",
+  "followUpDate",
 ];
 
 const extractLabel = (field: { label?: string } | undefined): string => {
@@ -33,6 +34,8 @@ const mapJobType = (type: string | undefined): string => {
       return "Part Time";
     case "C":
       return "Contract";
+    case "I":
+      return "Internship";
     default:
       return "Unknown";
   }
@@ -58,6 +61,9 @@ const transformJobData = (
     Location: extractLabel(job.Location),
     JobSource: extractLabel(job.JobSource),
     Status: extractLabel(job.Status),
+    followUpDate: job.followUpDate
+      ? format(new Date(job.followUpDate), "yyyy-MM-dd")
+      : "N/A",
   };
 };
 
@@ -76,7 +82,7 @@ export const POST = async () => {
       let recordIndex = 0;
       for await (const chunk of getJobsIterator()) {
         if (hasError) break;
-        const transformedData = chunk.map((job, idx) =>
+        const transformedData = chunk.map((job: any, idx: number) =>
           transformJobData(job, recordIndex + idx)
         );
         recordIndex += chunk.length;

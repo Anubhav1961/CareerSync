@@ -194,7 +194,7 @@ export const getActivityCalendarData = async (): Promise<any | undefined> => {
     );
 
     const groupedHours: Record<string, number> = activityData.reduce(
-      (acc: Record<string, number>, activity) => {
+      (acc: Record<string, number>, activity: { startTime: Date; duration: number | null }) => {
         const date = format(new Date(activity.startTime), "yyyy-MM-dd");
         acc[date] = (acc[date] || 0) + (activity.duration || 0) / 60;
         return acc;

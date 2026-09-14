@@ -70,6 +70,8 @@ import { DeleteAlertDialog } from "../DeleteAlertDialog";
 import { AddJob } from "./AddJob";
 import { deleteJobById, updateJobStatus } from "@/actions/job.actions";
 import { toastError, toastSuccess } from "@/lib/toast";
+import { InterviewTimeline } from "./InterviewTimeline";
+import { FollowUpManager } from "./FollowUpManager";
 
 type JobDetailsProps = {
   job: JobResponse;
@@ -160,22 +162,24 @@ function JobDetails({
   };
 
   const onChangeStatus = async (status: JobStatus) => {
-    const { success, message } = await updateJobStatus(job.id, status);
-    if (success) {
+    const res = await updateJobStatus(job.id, status);
+    if (res.success) {
       setCurrentStatus(status);
       toastSuccess(`Job has been updated successfully`);
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to update job status";
+      toastError(errorMsg);
     }
   };
 
   const onDeleteJob = async () => {
-    const { success, message } = await deleteJobById(job.id);
-    if (success) {
+    const res = await deleteJobById(job.id);
+    if (res.success) {
       toastSuccess(`Job has been deleted successfully`);
       router.push("/dashboard/myjobs");
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete job";
+      toastError(errorMsg);
     }
   };
 
@@ -390,6 +394,26 @@ function JobDetails({
               <MatchDetails matchData={parsedMatchData} />
             </div>
           )}
+
+          {/* Follow-up Reminders Manager */}
+          <div className="mx-4 mb-4">
+            <FollowUpManager
+              jobId={job.id}
+              initialDate={job.followUpDate}
+              initialNotes={job.followUpNotes}
+              onRefresh={() => router.refresh()}
+            />
+          </div>
+
+          {/* Interview Timeline & Stages */}
+          <div className="mx-4 mb-4">
+            <InterviewTimeline
+              jobId={job.id}
+              interviews={job.Interview || []}
+              onRefresh={() => router.refresh()}
+            />
+          </div>
+
           <NotesSection jobId={job.id} openTrigger={noteOpenTrigger} />
           <CardFooter></CardFooter>
         </Card>

@@ -6,6 +6,7 @@ export default async function AutomationsPage() {
   const resumeResult = await getResumeList(
     1,
     100,
+    "",
     APP_CONSTANTS.MIN_RESUME_SECTIONS_FOR_SELECTION,
   );
   const resumes =

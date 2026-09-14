@@ -61,12 +61,13 @@ function JobSourcesTable({
 
   const deleteJobSource = async (sourceId: string) => {
     if (sourceId) {
-      const { success, message } = await deleteJobSourceById(sourceId);
-      if (success) {
+      const res = await deleteJobSourceById(sourceId);
+      if (res.success) {
         toastSuccess(`Job source has been deleted successfully`);
         reloadJobSources();
       } else {
-        toastError(message);
+        const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete job source";
+        toastError(errorMsg);
       }
     }
   };

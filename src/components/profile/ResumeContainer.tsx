@@ -175,12 +175,13 @@ function ResumeContainer({
 
   const handleSetDefault = async () => {
     if (!resume?.id) return;
-    const { success, message } = await setDefaultResume(resume.id);
-    if (success) {
+    const res = await setDefaultResume(resume.id);
+    if (res.success) {
       toastSuccess("This resume is now your default.");
       router.refresh();
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to set default resume";
+      toastError(errorMsg);
     }
   };
 

@@ -73,12 +73,13 @@ function ActivityTypesTable({
 
   const deleteType = async (id: string | undefined) => {
     if (!id) return;
-    const { success, message } = await deleteActivityTypeById(id);
-    if (success) {
+    const res = await deleteActivityTypeById(id);
+    if (res.success) {
       toastSuccess("Activity type has been deleted successfully");
       reloadActivityTypes();
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete activity type";
+      toastError(errorMsg);
     }
   };
 

@@ -3,8 +3,21 @@
 // "use server": these are plain server-side reads called from the dashboard
 // page, and TopActivityType is a type export a client component imports.
 
-export { getJobsActivitySummary } from "./dashboard/stats";
-export type { TopActivityType, JobsActivitySummary } from "./dashboard/stats";
+export {
+  getJobsActivitySummary,
+  getExecutiveKpiStats,
+  getApplicationFunnelStats,
+  getUpcomingInterviews,
+  getPendingFollowUps,
+} from "./dashboard/stats";
+export type {
+  TopActivityType,
+  JobsActivitySummary,
+  ExecutiveKpiStats,
+  ApplicationFunnelStats,
+  UpcomingInterviewItem,
+  PendingFollowUpItem,
+} from "./dashboard/stats";
 
 export { getRecentJobs, getRecentActivities } from "./dashboard/recent";
 

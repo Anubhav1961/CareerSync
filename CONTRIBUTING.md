@@ -1,10 +1,10 @@
-# Contributing to JobSync
+# Contributing to CareerSync
 
-Thank you for your interest in contributing to JobSync! This document outlines the process and guidelines for contributing to this project. Please read it carefully before submitting any contributions.
+Thank you for your interest in contributing to CareerSync! This document outlines the process and guidelines for contributing to this project. Please read it carefully before submitting any contributions.
 
 ## Table of Contents
 
-- [Contributing to JobSync](#contributing-to-jobsync)
+- [Contributing to CareerSync](#contributing-to-careersync)
   - [Table of Contents](#table-of-contents)
   - [Code of Conduct](#code-of-conduct)
   - [Getting Started](#getting-started)
@@ -304,4 +304,4 @@ Feature requests are discussed before any implementation work begins.
 
 If you have a question that isn't answered here, feel free to open a [discussion](https://github.com/Gsync/jobsync/discussions) or an issue tagged `question`.
 
-Thank you for helping make JobSync better!
+Thank you for helping make CareerSync better!

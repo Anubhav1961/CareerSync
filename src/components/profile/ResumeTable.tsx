@@ -84,12 +84,13 @@ function DocumentTable({
 
   const performSetDefault = async (doc: ProfileDocument) => {
     if (!doc.id) return;
-    const { success, message } = await setDefaultResume(doc.id);
-    if (success) {
+    const res = await setDefaultResume(doc.id);
+    if (res.success) {
       toastSuccess(`"${doc.title}" is now your default resume.`);
       reloadDocuments();
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to set default resume";
+      toastError(errorMsg);
     }
   };
 
@@ -126,17 +127,18 @@ function DocumentTable({
       return toastError(`Number of jobs using ${label} must be 0!`);
     }
 
-    const { success, message } =
+    const res =
       doc.type === "resume"
         ? await deleteResumeById(doc.id)
         : await deleteCoverLetterById(doc.id);
 
-    if (success) {
+    if (res.success) {
       const label = doc.type === "resume" ? "Resume" : "Cover letter";
       toastSuccess(`${label} has been deleted successfully`);
       reloadDocuments();
     } else {
-      toastError(message);
+      const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete document";
+      toastError(errorMsg);
     }
   };
 

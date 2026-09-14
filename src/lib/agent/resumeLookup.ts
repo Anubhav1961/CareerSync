@@ -50,13 +50,13 @@ export async function resolveResumeForAgent(
 
   const wanted = opts.title?.trim().toLowerCase();
   if (wanted) {
-    const exact = titles.filter((r) => r.title.toLowerCase() === wanted);
+    const exact = titles.filter((r: { id: string; title: string }) => r.title.toLowerCase() === wanted);
     // Duplicate titles resolve to the most recently updated rather than
     // asking again: the picker answers with a title, so a second question
     // would loop forever.
     const matches = exact.length > 0
       ? exact
-      : titles.filter((r) => r.title.toLowerCase().includes(wanted));
+      : titles.filter((r: { id: string; title: string }) => r.title.toLowerCase().includes(wanted));
     if (matches.length > 0) {
       const loaded = await load(userId, matches[0].id, "named", matches.length > 1);
       if (loaded) return loaded;
@@ -66,7 +66,7 @@ export async function resolveResumeForAgent(
 
   // Ownership comes from the scoped listing above, never from the id itself
   // — pageContext is client-supplied.
-  if (opts.pageResumeId && titles.some((r) => r.id === opts.pageResumeId)) {
+  if (opts.pageResumeId && titles.some((r: { id: string; title: string }) => r.id === opts.pageResumeId)) {
     const loaded = await load(userId, opts.pageResumeId, "page");
     if (loaded) return loaded;
   }
@@ -76,7 +76,7 @@ export async function resolveResumeForAgent(
     select: { defaultResumeId: true },
   });
   const defaultId = user?.defaultResumeId;
-  if (defaultId && titles.some((r) => r.id === defaultId)) {
+  if (defaultId && titles.some((r: { id: string; title: string }) => r.id === defaultId)) {
     const loaded = await load(userId, defaultId, "default");
     if (loaded) return loaded;
   }

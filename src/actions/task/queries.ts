@@ -153,7 +153,14 @@ export const getActivityTypesWithTaskCounts = async (): Promise<
       },
     });
 
-    const data = activityTypes
+    type ActivityTypeRow = {
+      id: string;
+      label: string;
+      value: string;
+      _count: { Tasks: number };
+    };
+
+    const data = (activityTypes as ActivityTypeRow[])
       .map((type) => ({
         id: type.id,
         label: type.label,

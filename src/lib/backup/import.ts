@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import type JSZip from "jszip";
+import { Prisma } from "@prisma/client";
 import db from "@/lib/db";
 import { APP_CONSTANTS } from "@/lib/constants";
 import { IdMap, buildCreateData } from "./idmap";
@@ -295,13 +296,13 @@ export async function importBackup(
       where: MODEL_SPECS.File.scope(userId),
       select: { filePath: true },
     })
-  ).map((f) => f.filePath);
+  ).map((f: { filePath: string }) => f.filePath);
 
   const counts: Record<string, number> = {};
 
   try {
     await db.$transaction(
-      async (transaction) => {
+      async (transaction: Prisma.TransactionClient) => {
         const tx = transaction as unknown as Tx;
 
         await wipe(tx, userId);

@@ -25,7 +25,7 @@ export const getNotesByJobId = async (
       orderBy: { createdAt: "desc" },
     });
 
-    const data: NoteResponse[] = notes.map((note) => ({
+    const data: NoteResponse[] = notes.map((note: { createdAt: Date; updatedAt: Date; id: string; userId: string; jobId: string; content: string }) => ({
       ...note,
       isEdited: note.updatedAt.getTime() - note.createdAt.getTime() > 1000,
     }));

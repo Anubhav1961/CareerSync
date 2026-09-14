@@ -181,7 +181,7 @@ export async function resolveJobStatus(value?: string): Promise<string> {
   if (!status) {
     const all = await prisma.jobStatus.findMany({ select: { value: true } });
     throw new JobResolutionError(
-      `Invalid status "${target}". Valid values: ${all.map((s) => s.value).join(", ")}`,
+      `Invalid status "${target}". Valid values: ${all.map((s: { value: string }) => s.value).join(", ")}`,
     );
   }
   return status.id;

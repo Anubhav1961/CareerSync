@@ -41,7 +41,7 @@ tests:
     vars:
       jobPosting: file://../job-match/fixtures/backend-job.txt
       userMessage: |
-        Save this job posting to JobSync:
+        Save this job posting to CareerSync:
 
         {{jobPosting}}
     assert:
@@ -57,7 +57,7 @@ tests:
       # model spends its turn on parallel find_job probes and never reaches the
       # add, which tests find_job's description rather than add_jobs_batch's.
       userMessage: |
-        Add all of these to JobSync. None of them are tracked yet, so don't bother
+        Add all of these to CareerSync. None of them are tracked yet, so don't bother
         checking for duplicates.
 
         {{jobPosting}}
@@ -92,7 +92,7 @@ tests:
   - description: Follows the match directive after add_job
     vars:
       userMessage: |
-        Save this job posting to JobSync, then do whatever it asks you to do next.
+        Save this job posting to CareerSync, then do whatever it asks you to do next.
 
         Senior Backend Engineer at Northwind Cloud. Remote, North America.
         Requires 7+ years backend, Go, Kubernetes, AWS, PostgreSQL, and

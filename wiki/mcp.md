@@ -1,7 +1,7 @@
 ---
 type: how-to
 title: MCP Access
-description: Connecting an external AI agent such as Claude Desktop to JobSync over MCP — generating a token, adding the connector, the tools an agent gets, and the limits.
+description: Connecting an external AI agent such as Claude Desktop to CareerSync over MCP — generating a token, adding the connector, the tools an agent gets, and the limits.
 feature: mcp
 tags: [mcp, claude desktop, agent, connector, personal access token, integration, add job from chat, mcp-remote, streamable-http, token, revoke]
 aliases: [model context protocol, connect claude, claude desktop integration, api token, personal access token, agent access, external agent]
@@ -11,13 +11,13 @@ stale_after: 2027-09-02
 
 # MCP Access
 
-## What can an AI agent do with JobSync over MCP?
+## What can an AI agent do with CareerSync over MCP?
 
-It can add and correct jobs, add Question Bank entries, and save a job-match or resume review that it produced itself. JobSync runs a built-in MCP (Model Context Protocol) server, so a chat client such as Claude Desktop can write to your tracker without you switching to the app — paste a posting into your agent and ask it to add the job, and the company, title, location, source and tags resolve against your existing lists.
+It can add and correct jobs, add Question Bank entries, and save a job-match or resume review that it produced itself. CareerSync runs a built-in MCP (Model Context Protocol) server, so a chat client such as Claude Desktop can write to your tracker without you switching to the app — paste a posting into your agent and ask it to add the job, and the company, title, location, source and tags resolve against your existing lists.
 
 Two things stay in your control. Every connection needs a personal access token you generate yourself, and each token is named — jobs it creates carry that name as their source, and an agent can only edit jobs that were created through MCP in the first place. Nothing an agent does can overwrite a job you curated in the app.
 
-JobSync runs no AI model on the MCP path. When the agent produces a match score or a resume review, it is the agent's own model doing the thinking; JobSync only hands over the material and stores the result.
+CareerSync runs no AI model on the MCP path. When the agent produces a match score or a resume review, it is the agent's own model doing the thinking; CareerSync only hands over the material and stores the result.
 
 ## How do I generate an MCP access token?
 
@@ -25,20 +25,20 @@ Open the avatar menu at the bottom of the sidebar, choose **Settings**, then **M
 
 The dialog that follows shows the full token once and never again. Copy it before you close the dialog, along with the ready-made config snippet for your client. If you lose it, revoke the token and generate a new one.
 
-The same page shows your **Endpoint URL** at the top — it is your JobSync address with `/api/mcp` on the end — and lists every token you have, with its prefix, creation and expiry dates, last use and scopes. You can hold up to 10 tokens at a time.
+The same page shows your **Endpoint URL** at the top — it is your CareerSync address with `/api/mcp` on the end — and lists every token you have, with its prefix, creation and expiry dates, last use and scopes. You can hold up to 10 tokens at a time.
 
 ## How do I add the connector to Claude Desktop?
 
-Open Claude Desktop, go to **Settings → Developer → Edit Config** to open `claude_desktop_config.json`, and paste in the "Claude Desktop (via mcp-remote)" snippet from JobSync's token dialog. It looks like this:
+Open Claude Desktop, go to **Settings → Developer → Edit Config** to open `claude_desktop_config.json`, and paste in the "Claude Desktop (via mcp-remote)" snippet from CareerSync's token dialog. It looks like this:
 
 ```json
 {
   "mcpServers": {
-    "jobsync": {
+    "careersync": {
       "command": "npx",
       "args": [
         "mcp-remote",
-        "http://<your-jobsync-url>/api/mcp",
+        "http://<your-careersync-url>/api/mcp",
         "--header",
         "Authorization: Bearer <your-token>"
       ]
@@ -47,9 +47,9 @@ Open Claude Desktop, go to **Settings → Developer → Edit Config** to open `c
 }
 ```
 
-Save the file and restart Claude Desktop fully — quit the app, don't just close the window. The JobSync tools then appear in the client's tool list.
+Save the file and restart Claude Desktop fully — quit the app, don't just close the window. The CareerSync tools then appear in the client's tool list.
 
-`mcp-remote` is needed because Claude Desktop connects only to local servers; it bridges to JobSync's remote endpoint. If your JobSync URL is a plain `http://` address on your home network rather than `localhost` or HTTPS, `mcp-remote` refuses it unless you add `--allow-http` to the `args` list — the snippet in the token dialog already includes that flag when it detects such a URL.
+`mcp-remote` is needed because Claude Desktop connects only to local servers; it bridges to CareerSync's remote endpoint. If your CareerSync URL is a plain `http://` address on your home network rather than `localhost` or HTTPS, `mcp-remote` refuses it unless you add `--allow-http` to the `args` list — the snippet in the token dialog already includes that flag when it detects such a URL.
 
 ## How do I connect a client other than Claude Desktop?
 
@@ -58,9 +58,9 @@ Use the streamable-HTTP snippet instead — clients such as OpenClaw and Hermes 
 ```json
 {
   "mcpServers": {
-    "jobsync": {
+    "careersync": {
       "type": "streamable-http",
-      "url": "http://<your-jobsync-url>/api/mcp",
+      "url": "http://<your-careersync-url>/api/mcp",
       "headers": { "Authorization": "Bearer <your-token>" }
     }
   }
@@ -85,7 +85,7 @@ Tokens are issued with the scopes needed for all of these, so there is nothing t
 
 ## How do I get a job match or resume review from my agent?
 
-For a match, add a job through the agent with the full posting text and make sure you have a default resume set in **Profile**. JobSync then hands the agent your resume and asks it to analyze the fit; the score, recommendation and write-up land on the job and render exactly like an in-app match, labelled "mcp / \<token name\>".
+For a match, add a job through the agent with the full posting text and make sure you have a default resume set in **Profile**. CareerSync then hands the agent your resume and asks it to analyze the fit; the score, recommendation and write-up land on the job and render exactly like an in-app match, labelled "mcp / \<token name\>".
 
 How complete the description is decides what happens. A posting of roughly 150 words or more gets a full match. A shorter one still gets matched, but the score is flagged **Provisional** on the job. A title-only entry gets no match offer at all — the agent is told to fetch the full posting and update the job first.
 
@@ -99,7 +99,7 @@ Work through these in order. Check that the endpoint URL in your config matches 
 
 If the connection works but calls start failing, you may have hit the rate limit: 60 MCP requests per hour across all tools and all your tokens. A batch call spends one request per item, and adding a job then saving its match spends two.
 
-If you self-host with `NODE_ENV=production`, the MCP server is off unless the environment variable `MCP_ENABLED` is set to `true`. That and every other setting are covered in the [project README](https://github.com/Gsync/jobsync#readme).
+If you self-host with `NODE_ENV=production`, the MCP server is off unless the environment variable `MCP_ENABLED` is set to `true`. That and every other setting are covered in the [project README](https://github.com/your-username/CareerSync#readme).
 
 ## How do I revoke a token or see which agent added a job?
 

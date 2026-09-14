@@ -126,7 +126,7 @@ async function runAutomationTraced(
     dbCancelCheckInFlight = true;
     db.automationRun
       .findUnique({ where: { id: run.id }, select: { status: true } })
-      .then((row) => {
+      .then((row: { status: string } | null) => {
         if (row?.status === "cancelling") controller.abort();
       })
       .catch(() => {})

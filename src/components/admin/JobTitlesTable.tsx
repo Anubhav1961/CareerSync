@@ -57,12 +57,13 @@ function JobTitlesTable({ jobTitles, reloadJobTitles }: JobTitlesTableProps) {
   };
   const deleteJobTitle = async (titleId: string) => {
     if (titleId) {
-      const { success, message } = await deleteJobTitleById(titleId);
-      if (success) {
+      const res = await deleteJobTitleById(titleId);
+      if (res.success) {
         toastSuccess(`Job title has been deleted successfully`);
         reloadJobTitles();
       } else {
-        toastError(message);
+        const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete job title";
+        toastError(errorMsg);
       }
     }
   };

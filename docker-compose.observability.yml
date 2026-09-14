@@ -1,7 +1,7 @@
-# Reference only. jobsync's deploy scripts and Jenkinsfile never touch this
+# Reference only. careersync's deploy scripts and Jenkinsfile never touch this
 # file — run OpenObserve wherever you like and point the app at it with
 # OTEL_EXPORTER_OTLP_ENDPOINT. Kept separate from docker-compose.otel.yml on
-# purpose: merging them would force-recreate this container on every jobsync
+# purpose: merging them would force-recreate this container on every careersync
 # deploy via --force-recreate, re-coupling their lifecycles.
 #
 # All values below are starting points, not measured. Verify them against

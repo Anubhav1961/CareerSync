@@ -158,7 +158,14 @@ export const getTagsWithQuestionCounts = async (): Promise<
       orderBy: { label: "asc" },
     });
 
-    const data = tags
+    type TagRow = {
+      id: string;
+      label: string;
+      value: string;
+      _count: { questions: number };
+    };
+
+    const data = (tags as TagRow[])
       .filter((tag) => tag._count.questions > 0)
       .map((tag) => ({
         id: tag.id,

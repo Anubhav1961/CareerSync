@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { StickyNote } from "lucide-react";
+import { StickyNote, BellRing, Calendar, GraduationCap } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -73,10 +73,10 @@ function MyJobsTable({
                   <img
                     alt="Company logo"
                     className="rounded-md object-cover h-8 w-8 min-w-8"
-                    src={job.Company?.logoUrl || "/images/jobsync-logo.svg"}
+                    src={job.Company?.logoUrl || "/images/careersync-logo.svg"}
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/images/jobsync-logo.svg";
+                      e.currentTarget.src = "/images/careersync-logo.svg";
                     }}
                   />
                 </TableCell>
@@ -84,18 +84,48 @@ function MyJobsTable({
                   {job.appliedDate ? format(job.appliedDate, "PP") : "N/A"}
                 </TableCell>
                 <TableCell
-                  className="font-medium cursor-pointer max-w-[120px] md:max-w-[220px]"
+                  className="font-medium cursor-pointer max-w-[140px] md:max-w-[260px]"
                 >
-                  <div className="flex items-center gap-1.5">
-                    <Link href={`/dashboard/myjobs/${job?.id}`} className="block truncate">
-                      {job.JobTitle?.label}
-                    </Link>
-                    {(job._count?.Notes ?? 0) > 0 && (
-                      <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5 shrink-0">
-                        <StickyNote className="h-3 w-3 mr-0.5" />
-                        {job._count!.Notes}
-                      </Badge>
-                    )}
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Link href={`/dashboard/myjobs/${job?.id}`} className="font-semibold truncate hover:underline">
+                        {job.JobTitle?.label}
+                      </Link>
+                      {job.jobType === "I" && (
+                        <Badge variant="outline" className="border-primary/40 text-primary text-[10px] px-1 py-0 h-4 font-medium gap-0.5">
+                          <GraduationCap className="h-2.5 w-2.5" />
+                          Intern
+                        </Badge>
+                      )}
+                      {(job._count?.Notes ?? 0) > 0 && (
+                        <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 shrink-0">
+                          <StickyNote className="h-2.5 w-2.5 mr-0.5" />
+                          {job._count!.Notes}
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 flex-wrap pt-0.5">
+                      {job.followUpDate && (
+                        <Badge
+                          variant={new Date(job.followUpDate) < new Date() ? "destructive" : "outline"}
+                          className="text-[10px] px-1.5 py-0 h-4 shrink-0 font-normal"
+                          title={`Follow-up: ${format(new Date(job.followUpDate), "PP")}`}
+                        >
+                          <BellRing className="h-2.5 w-2.5 mr-1" />
+                          {new Date(job.followUpDate) < new Date() ? "Follow-up Overdue" : `Follow up ${format(new Date(job.followUpDate), "MMM d")}`}
+                        </Badge>
+                      )}
+                      {job.Interview && job.Interview.length > 0 && (
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] px-1.5 py-0 h-4 shrink-0 bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 font-normal"
+                        >
+                          <Calendar className="h-2.5 w-2.5 mr-1" />
+                          {job.Interview[0].round || "Interview"}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell className="font-medium max-w-[100px] md:max-w-[160px]">

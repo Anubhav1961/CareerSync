@@ -1,4 +1,5 @@
 "use server";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/db";
 import { handleError } from "@/lib/utils";
 import {
@@ -22,7 +23,6 @@ export const getResumeCopyTitleSuggestion = async (
       throw new Error("Resume not found or access denied");
     }
 
-    // All titles, not just the current page, so the suggestion never collides
     const existing = await prisma.resume.findMany({
       where: { profile: { userId: user.id } },
       select: { title: true },
@@ -32,7 +32,7 @@ export const getResumeCopyTitleSuggestion = async (
       success: true,
       data: buildCopyTitle(
         source.title,
-        existing.map((r) => r.title),
+        existing.map((r: { title: string }) => r.title),
       ),
     };
   } catch (error) {
@@ -48,7 +48,6 @@ export const copyResume = async (
   try {
     const user = await requireUser();
 
-    // Read outside the transaction so the SQLite write lock is held briefly
     const source = await prisma.resume.findUnique({
       where: { id: resumeId, profile: { userId: user.id } },
       select: resumeCopySelect,
@@ -67,11 +66,11 @@ export const copyResume = async (
     });
     const uniqueTitle = ensureUniqueTitle(
       title,
-      existing.map((r) => r.title),
+      existing.map((r: { title: string }) => r.title),
     );
 
     const created = await prisma.$transaction(
-      async (tx) => {
+      async (tx: Prisma.TransactionClient) => {
         const newResume = await tx.resume.create({
           data: { profileId: source.profileId, title: uniqueTitle },
           select: { id: true },
@@ -99,12 +98,9 @@ export const copyResume = async (
         for (const section of source.ResumeSections) {
           const newSection = await tx.resumeSection.create({
             data: {
-              // Connect (not resumeId) because Prisma forbids mixing a scalar
-              // FK with the nested summary create below
               Resume: { connect: { id: newResume.id } },
               sectionTitle: section.sectionTitle,
               sectionType: section.sectionType,
-              // Summary is 1:1 via summaryId, so nest it with the section
               ...(section.summary
                 ? { summary: { create: { content: section.summary.content } } }
                 : {}),
@@ -114,7 +110,7 @@ export const copyResume = async (
 
           if (section.workExperiences.length > 0) {
             await tx.workExperience.createMany({
-              data: section.workExperiences.map((w) => ({
+              data: section.workExperiences.map((w: any) => ({
                 resumeSectionId: newSection.id,
                 companyId: w.companyId,
                 jobTitleId: w.jobTitleId,
@@ -128,7 +124,7 @@ export const copyResume = async (
 
           if (section.educations.length > 0) {
             await tx.education.createMany({
-              data: section.educations.map((e) => ({
+              data: section.educations.map((e: any) => ({
                 resumeSectionId: newSection.id,
                 institution: e.institution,
                 degree: e.degree,
@@ -143,7 +139,7 @@ export const copyResume = async (
 
           if (section.licenseOrCertifications.length > 0) {
             await tx.licenseOrCertification.createMany({
-              data: section.licenseOrCertifications.map((l) => ({
+              data: section.licenseOrCertifications.map((l: any) => ({
                 resumeSectionId: newSection.id,
                 title: l.title,
                 organization: l.organization,
@@ -156,7 +152,7 @@ export const copyResume = async (
 
           if (section.others.length > 0) {
             await tx.otherSection.createMany({
-              data: section.others.map((o) => ({
+              data: section.others.map((o: any) => ({
                 resumeSectionId: newSection.id,
                 title: o.title,
                 content: o.content,
@@ -166,7 +162,7 @@ export const copyResume = async (
 
           if (section.skills.length > 0) {
             await tx.skill.createMany({
-              data: section.skills.map((s) => ({
+              data: section.skills.map((s: any) => ({
                 resumeSectionId: newSection.id,
                 tagId: s.tagId,
                 category: s.category,
@@ -178,10 +174,13 @@ export const copyResume = async (
 
         return newResume;
       },
-      { timeout: 15000 },
     );
 
-    return { success: true, data: { id: created.id, title: uniqueTitle } };
+    return {
+      success: true,
+      message: "Resume copied successfully.",
+      data: created,
+    };
   } catch (error) {
     const msg = "Failed to copy resume.";
     return handleError(error, msg);

@@ -2,7 +2,7 @@
 // carry the routing, so the system prompt must not do that work for them —
 // don't add hints like "use add_jobs_batch for multiple jobs" here.
 const SYSTEM_PROMPT =
-  'You are a helpful assistant connected to the user\'s JobSync account through its MCP tools. ' +
+  'You are a helpful assistant connected to the user\'s CareerSync account through its MCP tools. ' +
   'Use the available tools to carry out the user\'s request. Do not ask for confirmation.';
 
 type Message = Record<string, unknown>;

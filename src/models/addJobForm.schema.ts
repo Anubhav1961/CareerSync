@@ -66,4 +66,6 @@ export const AddJobFormSchema = z.object({
     .max(APP_CONSTANTS.MAX_JOB_TAGS)
     .optional()
     .default([]),
+  followUpDate: z.date().optional().nullable(),
+  followUpNotes: z.string().optional().nullable(),
 });

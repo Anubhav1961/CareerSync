@@ -59,12 +59,13 @@ function JobLocationsTable({
   };
   const deleteJobLocation = async (locationId: string) => {
     if (locationId) {
-      const { success, message } = await deleteJobLocationById(locationId);
-      if (success) {
+      const res = await deleteJobLocationById(locationId);
+      if (res.success) {
         toastSuccess(`Job location has been deleted successfully`);
         reloadJobLocations();
       } else {
-        toastError(message);
+        const errorMsg = ("message" in res && res.message) ? res.message : "Failed to delete job location";
+        toastError(errorMsg);
       }
     }
   };

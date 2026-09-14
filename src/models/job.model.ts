@@ -16,6 +16,26 @@ export interface JobForm {
   jobUrl?: string;
   applied: boolean;
   workplaceType?: string | null;
+  followUpDate?: Date | null;
+  followUpNotes?: string | null;
+}
+
+export interface InterviewItem {
+  id: string;
+  jobId: string;
+  createdAt: Date;
+  updatedAt?: Date | null;
+  round?: string | null;
+  interviewDate?: Date | null;
+  location?: string | null;
+  status?: string | null;
+  notes?: string | null;
+  feedback?: string | null;
+  job?: {
+    id: string;
+    JobTitle?: { label: string };
+    Company?: { label: string; logoUrl?: string | null };
+  };
 }
 
 export interface Tag {
@@ -57,6 +77,9 @@ export interface JobResponse {
   createdVia?: string | null;
   discoveryStatus?: string | null;
   descriptionCompleteness?: DescriptionCompleteness | null;
+  followUpDate?: Date | null;
+  followUpNotes?: string | null;
+  Interview?: InterviewItem[];
   _count?: { Notes?: number };
 }
 
@@ -107,8 +130,8 @@ export interface JobLocation {
   id: string;
   label: string;
   value: string;
-  stateProv?: string;
-  country?: string;
+  stateProv?: string | null;
+  country?: string | null;
   createdBy: string;
   _count?: {
     jobsApplied: number;
@@ -126,6 +149,7 @@ export enum JOB_TYPES {
   FT = "Full-time",
   PT = "Part-time",
   C = "Contract",
+  I = "Internship",
 }
 
 export enum WORKPLACE_TYPES {

@@ -16,11 +16,27 @@ const JOB_LIST_SELECT = {
   Location: true,
   dueDate: true,
   appliedDate: true,
+  createdAt: true,
   description: false,
   Resume: true,
   CoverLetter: true,
   matchScore: true,
   discoveryStatus: true,
+  followUpDate: true,
+  followUpNotes: true,
+  Interview: {
+    select: {
+      id: true,
+      round: true,
+      interviewDate: true,
+      location: true,
+      status: true,
+    },
+    orderBy: {
+      interviewDate: "asc" as const,
+    },
+  },
+  tags: true,
   _count: { select: { Notes: true } },
 };
 
@@ -37,6 +53,7 @@ const JOB_EXPORT_SELECT = {
   dueDate: true,
   applied: true,
   appliedDate: true,
+  followUpDate: true,
 };
 
 const JOB_DETAILS_INCLUDE = {
@@ -52,6 +69,14 @@ const JOB_DETAILS_INCLUDE = {
   },
   CoverLetter: true,
   tags: true,
+  Interview: {
+    include: {
+      interviewers: true,
+    },
+    orderBy: {
+      interviewDate: "asc" as const,
+    },
+  },
 };
 
 type JobsListFilters = {
@@ -62,6 +87,9 @@ type JobsListFilters = {
   titleValue?: string;
   locationValue?: string;
   sourceValue?: string;
+  jobType?: string;
+  urgency?: string;
+  sortBy?: string;
 };
 
 const buildJobsWhereClause = (userId: string, filters: JobsListFilters) => {
@@ -73,10 +101,12 @@ const buildJobsWhereClause = (userId: string, filters: JobsListFilters) => {
     titleValue,
     locationValue,
     sourceValue,
+    jobType,
+    urgency,
   } = filters;
 
   const filterBy = filter
-    ? filter === Object.keys(JOB_TYPES)[1]
+    ? filter === "PT" || filter === "FT" || filter === "C" || filter === "I"
       ? {
           jobType: filter,
         }
@@ -95,6 +125,18 @@ const buildJobsWhereClause = (userId: string, filters: JobsListFilters) => {
     userId,
     ...filterBy,
   };
+
+  // Explicit job type filter override
+  if (jobType && jobType !== "all") {
+    whereClause.jobType = jobType;
+  }
+
+  // Urgency filter: follow-up or interview
+  if (urgency === "needs-followup") {
+    whereClause.followUpDate = { not: null };
+  } else if (urgency === "has-interview") {
+    whereClause.Interview = { some: {} };
+  }
 
   // Dismissed discovered jobs are kept only for dedup and shouldn't
   // clutter the tracked jobs list unless explicitly filtered for.
@@ -126,25 +168,18 @@ const buildJobsWhereClause = (userId: string, filters: JobsListFilters) => {
     whereClause.applied = true;
   }
 
-  // An explicit facet filter already pins that field, so searching it too
-  // would widen the result set back out via OR.
-  if (search) {
-    const searchConditions: Record<string, any>[] = [];
-    if (!titleValue) {
-      searchConditions.push({ JobTitle: { label: { contains: search } } });
-    }
-    if (!companyValue) {
-      searchConditions.push({ Company: { label: { contains: search } } });
-    }
-    if (!locationValue) {
-      searchConditions.push({ Location: { label: { contains: search } } });
-    }
-    if (!sourceValue) {
-      searchConditions.push({ JobSource: { label: { contains: search } } });
-    }
-    searchConditions.push(
-      { description: { contains: search } },
-    );
+  // Search across Title, Company, Location, Source, Description, Tags, and Notes
+  if (search && search.trim()) {
+    const trimmed = search.trim();
+    const searchConditions: Record<string, any>[] = [
+      { JobTitle: { label: { contains: trimmed } } },
+      { Company: { label: { contains: trimmed } } },
+      { Location: { label: { contains: trimmed } } },
+      { JobSource: { label: { contains: trimmed } } },
+      { description: { contains: trimmed } },
+      { tags: { some: { label: { contains: trimmed } } } },
+      { Notes: { some: { content: { contains: trimmed } } } },
+    ];
     whereClause.OR = searchConditions;
   }
 
@@ -161,6 +196,9 @@ export const getJobsList = async (
   titleValue?: string,
   locationValue?: string,
   sourceValue?: string,
+  jobType?: string,
+  urgency?: string,
+  sortBy: string = "newest",
 ): Promise<any | undefined> => {
   try {
     const user = await requireUser();
@@ -174,7 +212,24 @@ export const getJobsList = async (
       titleValue,
       locationValue,
       sourceValue,
+      jobType,
+      urgency,
     });
+
+    let orderBy: any = { createdAt: "desc" };
+    if (sortBy === "oldest") {
+      orderBy = { createdAt: "asc" };
+    } else if (sortBy === "applied-recent") {
+      orderBy = { appliedDate: "desc" };
+    } else if (sortBy === "due-soon") {
+      orderBy = { dueDate: "asc" };
+    } else if (sortBy === "followup-soon") {
+      orderBy = { followUpDate: "asc" };
+    } else if (sortBy === "company") {
+      orderBy = { Company: { label: "asc" } };
+    } else if (sortBy === "matchScore") {
+      orderBy = { matchScore: "desc" };
+    }
 
     const [data, total] = await Promise.all([
       prisma.job.findMany({
@@ -182,10 +237,7 @@ export const getJobsList = async (
         skip,
         take: limit,
         select: JOB_LIST_SELECT,
-        orderBy: {
-          createdAt: "desc",
-          // appliedDate: "desc",
-        },
+        orderBy,
       }),
       prisma.job.count({
         where: whereClause,

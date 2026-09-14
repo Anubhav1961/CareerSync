@@ -120,10 +120,10 @@ export default function RecentCardToggle({
                   <div key={job.id} className="flex items-center gap-4">
                     <Avatar className="hidden h-8 w-8 sm:flex">
                       <AvatarImage
-                        src={job.Company?.logoUrl || "/images/jobsync-logo.svg"}
+                        src={job.Company?.logoUrl || "/images/careersync-logo.svg"}
                         alt="Avatar"
                       />
-                      <AvatarFallback>JS</AvatarFallback>
+                      <AvatarFallback>CS</AvatarFallback>
                     </Avatar>
                     <Link href={`/dashboard/myjobs/${job?.id}`} className="min-w-0">
                       <div className="grid gap-1">

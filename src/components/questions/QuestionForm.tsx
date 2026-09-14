@@ -93,18 +93,19 @@ export function QuestionForm({
 
   function onSubmit(data: z.infer<typeof AddQuestionFormSchema>) {
     startTransition(async () => {
-      const { success, message } = editQuestion
+      const res = editQuestion
         ? await updateQuestion(data)
         : await createQuestion(data);
 
-      if (success) {
+      if (res.success) {
         toastSuccess(`Question has been ${editQuestion ? "updated" : "created"} successfully`);
         reset();
         setDialogOpen(false);
         resetEditQuestion();
         onQuestionSaved();
       } else {
-        toastError(message);
+        const errorMsg = "message" in res && typeof res.message === "string" ? res.message : "Failed to save question";
+        toastError(errorMsg);
       }
     });
   }

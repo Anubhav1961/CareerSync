@@ -205,14 +205,14 @@ describe("backup round trip", () => {
 
     // Lookups are replaced, not merged.
     const companies = await prisma.company.findMany({ where: { createdBy: userId } });
-    expect(companies.map((c) => c.value).sort()).toEqual(["acme"]);
+    expect(companies.map((c: { value: string }) => c.value).sort()).toEqual(["acme"]);
 
     // Tag associations survive on both sides.
     const job = await prisma.job.findFirstOrThrow({
       where: { userId },
       include: { tags: true, Company: true, Status: true, Notes: true },
     });
-    expect(job.tags.map((t) => t.value)).toEqual(["remote"]);
+    expect(job.tags.map((t: { value: string }) => t.value)).toEqual(["remote"]);
     expect(job.Company.label).toBe("Acme");
     expect(job.Status.value).toBe("applied");
     expect(job.Notes).toHaveLength(1);
@@ -221,7 +221,7 @@ describe("backup round trip", () => {
       where: { createdBy: userId },
       include: { tags: true },
     });
-    expect(question.tags.map((t) => t.value)).toEqual(["remote"]);
+    expect(question.tags.map((t: { value: string }) => t.value)).toEqual(["remote"]);
 
     // Summary ordering: the section imported with its summary attached.
     const section = await prisma.resumeSection.findFirstOrThrow({
@@ -308,7 +308,7 @@ describe("backup round trip", () => {
     expect(imported.snapshotPath).toBeTruthy();
     expect(
       (await prisma.company.findMany({ where: { createdBy: rollbackUserId } }))
-        .map((c) => c.value),
+        .map((c: { value: string }) => c.value),
     ).not.toContain("before");
 
     const snapshots = await listSnapshots(rollbackUserId);
@@ -318,7 +318,7 @@ describe("backup round trip", () => {
     const after = await prisma.company.findMany({
       where: { createdBy: rollbackUserId },
     });
-    expect(after.map((c) => c.value)).toEqual(["before"]);
+    expect(after.map((c: { value: string }) => c.value)).toEqual(["before"]);
   }, 120_000);
 
   // The regression test for the file gate. A tampered backup is the realistic

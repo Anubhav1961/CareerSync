@@ -10,20 +10,24 @@ import {
 } from "@/utils/localstorage.utils";
 import { useAgentChat } from "@/components/agent/AgentChatProvider";
 
-// Owns the job list itself: pagination, search, view mode, infinite scroll,
-// and the reload triggered when the agent chat writes a new job.
 export function useJobsList({
   companyFilter,
   appliedFilter,
   titleFilter,
   locationFilter,
   sourceFilter,
+  jobTypeFilter,
+  urgencyFilter,
+  sortBy = "newest",
 }: {
   companyFilter: string | null;
   appliedFilter: boolean;
   titleFilter: string | null;
   locationFilter: string | null;
   sourceFilter: string | null;
+  jobTypeFilter?: string | null;
+  urgencyFilter?: string | null;
+  sortBy?: string;
 }) {
   const { jobWrites } = useAgentChat();
   const [jobs, setJobs] = useState<JobResponse[]>([]);
@@ -37,8 +41,6 @@ export function useJobsList({
   const hasSearched = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Read after mount: localStorage is unavailable during SSR, so seeding the
-  // initial state from it would cause a hydration mismatch.
   useEffect(() => {
     const saved = getFromLocalStorage(
       APP_CONSTANTS.JOBS_VIEW_MODE_STORAGE_KEY,
@@ -68,6 +70,9 @@ export function useJobsList({
         titleFilter || undefined,
         locationFilter || undefined,
         sourceFilter || undefined,
+        jobTypeFilter || undefined,
+        urgencyFilter || undefined,
+        sortBy || "newest",
       );
       if (success && data) {
         setJobs((prev) => (page === 1 ? data : [...prev, ...data]));
@@ -86,44 +91,43 @@ export function useJobsList({
       titleFilter,
       locationFilter,
       sourceFilter,
+      jobTypeFilter,
+      urgencyFilter,
+      sortBy,
     ],
   );
 
   const reloadJobs = useCallback(async () => {
-    await loadJobs(1, undefined, searchTerm || undefined);
-    if (filterKey !== "none") {
-      setFilterKey("none");
-    }
+    await loadJobs(1, filterKey !== "none" ? filterKey : undefined, searchTerm || undefined);
   }, [loadJobs, filterKey, searchTerm]);
 
+  // Load when any filter or sort order changes
   useEffect(() => {
-    (async () => await loadJobs(1))();
-  }, [loadJobs]);
+    void loadJobs(1, filterKey !== "none" ? filterKey : undefined, searchTerm || undefined);
+  }, [loadJobs, filterKey, companyFilter, appliedFilter, titleFilter, locationFilter, sourceFilter, jobTypeFilter, urgencyFilter, sortBy]);
 
-  // The agent saves the job server-side, so only this counter tells us a row
-  // appeared. Deps are the counter alone: reloadJobs changes with every filter
-  // and keystroke, and the effects above already cover those.
+  // The agent saves the job server-side
   useEffect(() => {
     if (jobWrites === 0) return;
     void reloadJobs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobWrites]);
 
+  // Search input debouncer
   useEffect(() => {
     if (searchTerm !== "") {
       hasSearched.current = true;
     }
-    // Skip only on initial mount when search is empty
     if (searchTerm === "" && !hasSearched.current) return;
 
     const timer = setTimeout(() => {
-      loadJobs(1, filterKey, searchTerm || undefined);
+      loadJobs(1, filterKey !== "none" ? filterKey : undefined, searchTerm || undefined);
     }, 300);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
-  // Infinite scroll: auto-load next page when sentinel is visible
+  // Infinite scroll
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
@@ -136,7 +140,7 @@ export function useJobsList({
           !loadingMore &&
           jobs.length < totalJobs
         ) {
-          loadJobs(page + 1, filterKey, searchTerm || undefined);
+          loadJobs(page + 1, filterKey !== "none" ? filterKey : undefined, searchTerm || undefined);
         }
       },
       { threshold: APP_CONSTANTS.INTERSECTION_OBSERVER_THRESHOLD },
@@ -157,7 +161,7 @@ export function useJobsList({
 
   const onFilterChange = (filterBy: string) => {
     setFilterKey(filterBy);
-    loadJobs(1, filterBy, searchTerm || undefined);
+    loadJobs(1, filterBy !== "none" ? filterBy : undefined, searchTerm || undefined);
   };
 
   return {

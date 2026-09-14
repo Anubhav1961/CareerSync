@@ -94,12 +94,13 @@ function CreateCoverLetter({
 
   const onSubmit = (data: z.infer<typeof CoverLetterFormSchema>) => {
     startTransition(async () => {
-      const { success, message } = coverLetterToEdit?.id
+      const res = coverLetterToEdit?.id
         ? await updateCoverLetter(data.id!, data.title, data.content)
         : await createCoverLetter(data.title, data.content);
 
-      if (!success) {
-        toastError(message);
+      if (!res.success) {
+        const errorMsg = ("message" in res && res.message) ? res.message : "Failed to save cover letter";
+        toastError(errorMsg);
       } else {
         reset();
         setDialogOpen(false);

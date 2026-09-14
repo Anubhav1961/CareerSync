@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# JobSync Deployment Script
+# CareerSync Deployment Script
 # Usage: ./deploy.sh [branch-name]
 # Example: ./deploy.sh main
 # Example: ./deploy.sh develop
@@ -18,7 +18,7 @@ DEFAULT_BRANCH="main"
 BRANCH="${1:-$DEFAULT_BRANCH}"
 
 echo -e "${YELLOW}========================================${NC}"
-echo -e "${YELLOW}JobSync Deployment Script${NC}"
+echo -e "${YELLOW}CareerSync Deployment Script${NC}"
 echo -e "${YELLOW}========================================${NC}"
 echo ""
 

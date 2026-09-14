@@ -52,17 +52,18 @@ export const getActivityTypeList = async (
     const skip = (page - 1) * limit;
     const whereClause = { createdBy: user.id };
 
-    const [total, durationSums] = await Promise.all([
-      prisma.activityType.count({ where: whereClause }),
-      prisma.activity.groupBy({
-        by: ["activityTypeId"],
-        where: { userId: user.id, endTime: { not: null } },
-        _sum: { duration: true },
-      }),
-    ]);
+    const total = await prisma.activityType.count({ where: whereClause });
+    const durationSums = await prisma.activity.groupBy({
+      by: ["activityTypeId"],
+      where: { userId: user.id, endTime: { not: null } },
+      _sum: { duration: true },
+    });
 
-    const durationMap = new Map(
-      durationSums.map((d) => [d.activityTypeId, d._sum.duration ?? 0]),
+    const durationMap = new Map<string, number>(
+      durationSums.map((d: { activityTypeId: string; _sum: { duration: number | null } }) => [
+        d.activityTypeId,
+        d._sum.duration ?? 0,
+      ]),
     );
 
     // Fetch all activity types with counts, then sort by total duration
@@ -76,7 +77,14 @@ export const getActivityTypeList = async (
       },
     });
 
-    const sorted = allTypes
+    type ActivityTypeWithCount = {
+      id: string;
+      label: string;
+      value: string;
+      _count: { Activities: number; Tasks: number };
+    };
+
+    const sorted = (allTypes as ActivityTypeWithCount[])
       .map((t) => ({ ...t, totalDuration: durationMap.get(t.id) ?? 0 }))
       .sort((a, b) => b.totalDuration - a.totalDuration);
 
