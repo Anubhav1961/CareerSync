@@ -9,8 +9,8 @@ export const getActivityDataForPeriod = async (): Promise<{
   data: any[];
   keys: string[];
 }> => {
+  const user = await requireUser();
   try {
-    const user = await requireUser();
     // Use local time for date range to match grouping and getLast7Days
     const { start: sevenDaysAgo, end: today } = getLocalDayRange(6);
     const activities = await prisma.activity.findMany({
@@ -100,15 +100,14 @@ export const getActivityDataForPeriod = async (): Promise<{
 
     return { data, keys };
   } catch (error) {
-    const msg = "Failed to fetch activities data.";
-    console.error(msg, error);
-    throw new Error(msg);
+    console.error("Failed to fetch activities data", error);
+    return { data: [], keys: [] };
   }
 };
 
 export const getJobsActivityForPeriod = async (): Promise<any | undefined> => {
+  const user = await requireUser();
   try {
-    const user = await requireUser();
     // Use local time for date range to match grouping and getLast7Days
     const { start: sevenDaysAgo, end: today } = getLocalDayRange(6);
     const jobData = await prisma.job.groupBy({
@@ -145,15 +144,14 @@ export const getJobsActivityForPeriod = async (): Promise<any | undefined> => {
 
     return result;
   } catch (error) {
-    const msg = "Failed to fetch jobs list. ";
-    console.error(msg, error);
-    throw new Error(msg);
+    console.error("Failed to fetch jobs activity for period", error);
+    return [];
   }
 };
 
 export const getActivityCalendarData = async (): Promise<any | undefined> => {
+  const user = await requireUser();
   try {
-    const user = await requireUser();
     // Use local time for date range to match grouping
     const { start: daysAgo, end: today } = getLocalDayRange(365);
     const jobData = await prisma.job.groupBy({
@@ -223,8 +221,7 @@ export const getActivityCalendarData = async (): Promise<any | undefined> => {
 
     return groupedByYear;
   } catch (error) {
-    const msg = "Failed to fetch jobs list. ";
-    console.error(msg, error);
-    throw new Error(msg);
+    console.error("Failed to fetch activity calendar data", error);
+    return {};
   }
 };

@@ -6,7 +6,7 @@ import { Tag } from "@/models/job.model";
 import { getTagList } from "@/actions/tag.actions";
 import { APP_CONSTANTS } from "@/lib/constants";
 import Loading from "../Loading";
-import { Loader } from "lucide-react";
+import { Loader, Tag as TagIcon } from "lucide-react";
 import { RecordsCount } from "../RecordsCount";
 import TagsTable from "./TagsTable";
 import AddTag from "./AddTag";
@@ -102,6 +102,23 @@ function TagsContainer() {
           </ResponsiveCardHeader>
           <CardContent>
             {initialLoading && <Loading />}
+            {!initialLoading && tags.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+                  <TagIcon className="h-6 w-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-semibold text-foreground">
+                    {searchTerm ? "No matching skills found" : "No skills or tags added yet"}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    {searchTerm
+                      ? `No skills match "${searchTerm}". Try a different search query.`
+                      : "Skills and tags used to categorize your profile and jobs will appear here."}
+                  </p>
+                </div>
+              </div>
+            )}
             {tags.length > 0 && (
               <>
                 <TagsTable tags={tags} reloadTags={reloadTags} />

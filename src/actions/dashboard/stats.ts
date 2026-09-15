@@ -101,9 +101,15 @@ export const getJobsActivitySummary = async (
       totalHours,
     };
   } catch (error) {
-    const msg = "Failed to fetch jobs and activity summary";
-    console.error(msg, error);
-    throw new Error(msg);
+    console.error("Failed to fetch jobs and activity summary", error);
+    return {
+      jobsApplied: 0,
+      jobsTrend: 0,
+      topActivities: [],
+      otherActivities: [],
+      otherHours: 0,
+      totalHours: 0,
+    };
   }
 };
 

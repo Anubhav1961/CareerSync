@@ -22,7 +22,7 @@ import { APP_CONSTANTS } from "@/lib/constants";
 import Loading from "../Loading";
 import DocumentTable from "./ResumeTable";
 import { toastError } from "@/lib/toast";
-import { ChevronDown, PlusCircle } from "lucide-react";
+import { ChevronDown, FileText, PlusCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { RecordsCount } from "../RecordsCount";
 import {
@@ -259,6 +259,27 @@ const ProfileContainer = () => {
       </ResponsiveCardHeader>
       <CardContent>
         {loading && <Loading />}
+        {!loading && documents.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+            <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+              <FileText className="h-6 w-6" />
+            </div>
+            <div className="space-y-1 max-w-sm">
+              <h3 className="text-base font-semibold text-foreground">No documents created yet</h3>
+              <p className="text-xs text-muted-foreground">
+                Get started by creating a tailored resume or cover letter for your job applications.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
+              <Button size="sm" onClick={createResume} className="gap-1.5 text-xs">
+                <PlusCircle className="h-3.5 w-3.5" /> Add New Resume
+              </Button>
+              <Button size="sm" variant="outline" onClick={createCoverLetter} className="gap-1.5 text-xs">
+                <PlusCircle className="h-3.5 w-3.5" /> Add New Cover Letter
+              </Button>
+            </div>
+          </div>
+        )}
         {documents.length > 0 && (
           <>
             <DocumentTable

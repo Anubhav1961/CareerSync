@@ -6,6 +6,7 @@ import { APP_CONSTANTS } from "@/lib/constants";
 import { JobSource } from "@/models/job.model";
 import JobSourcesTable from "./JobSourcesTable";
 import { getJobSourceList } from "@/actions/jobSource.actions";
+import { Globe } from "lucide-react";
 import Loading from "../Loading";
 import { Button } from "../ui/button";
 import { RecordsCount } from "../RecordsCount";
@@ -57,6 +58,19 @@ function JobSourcesContainer() {
           </ResponsiveCardHeader>
           <CardContent>
             {loading && <Loading />}
+            {!loading && sources.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+                  <Globe className="h-6 w-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-semibold text-foreground">No job sources added yet</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Job sources (job boards, platforms, referral channels) will appear here.
+                  </p>
+                </div>
+              </div>
+            )}
             {sources.length > 0 && (
               <>
                 <JobSourcesTable

@@ -125,12 +125,6 @@ export const POST = async (req: NextRequest) => {
   // found" naming something they never configured.
   const provider = (ai?.provider ?? AiProvider.OLLAMA) as ProviderType;
   const modelName = ai?.model;
-  if (!modelName) {
-    return NextResponse.json(
-      { error: "No AI model is configured. Pick one in Settings to use the assistant." },
-      { status: 503 },
-    );
-  }
   const errorContext = { provider, model: modelName };
 
   let model;

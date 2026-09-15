@@ -8,7 +8,7 @@ import { Company } from "@/models/job.model";
 import { getCompanyById, getCompanyList } from "@/actions/company.actions";
 import { APP_CONSTANTS } from "@/lib/constants";
 import Loading from "../Loading";
-import { Loader } from "lucide-react";
+import { Building2, Loader } from "lucide-react";
 import { RecordsCount } from "../RecordsCount";
 import { SearchInput } from "../SearchInput";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
@@ -116,6 +116,23 @@ function CompaniesContainer() {
           </ResponsiveCardHeader>
           <CardContent>
             {initialLoading && <Loading />}
+            {!initialLoading && companies.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+                  <Building2 className="h-6 w-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-semibold text-foreground">
+                    {searchTerm ? "No matching companies found" : "No companies added yet"}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    {searchTerm
+                      ? `No companies match "${searchTerm}". Try a different search term.`
+                      : "Companies linked to your job applications will appear here."}
+                  </p>
+                </div>
+              </div>
+            )}
             {companies.length > 0 && (
               <>
                 <CompaniesTable

@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
-import { Loader } from "lucide-react";
+import { Briefcase, Loader, PlusCircle } from "lucide-react";
+import { Button } from "../ui/button";
 import {
   deleteJobById,
   getJobDetails,
@@ -184,6 +185,32 @@ function JobsContainer({
         />
         <CardContent>
           {initialLoading && <Loading />}
+          {!initialLoading && jobs.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+              <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+                <Briefcase className="h-6 w-6" />
+              </div>
+              <div className="space-y-1 max-w-sm">
+                <h3 className="text-base font-semibold text-foreground">
+                  {searchTerm || hasActiveFilters ? "No matching applications found" : "No applications tracked yet"}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {searchTerm || hasActiveFilters
+                    ? "Try adjusting or clearing your filters to view job applications."
+                    : "Track your job applications, interviews, offers, and follow-ups all in one place."}
+                </p>
+              </div>
+              {!searchTerm && !hasActiveFilters && (
+                <Button
+                  size="sm"
+                  className="gap-1.5 text-xs font-medium mt-1"
+                  onClick={() => router.push("/dashboard/myjobs?add-job=true")}
+                >
+                  <PlusCircle className="h-3.5 w-3.5" /> Add Application
+                </Button>
+              )}
+            </div>
+          )}
           {jobs.length > 0 &&
             (viewMode === "cards" ? (
               <MyJobsGrid

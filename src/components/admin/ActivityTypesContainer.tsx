@@ -4,6 +4,7 @@ import { Card, CardContent, CardTitle } from "../ui/card";
 import { ResponsiveCardHeader } from "../ResponsiveCardHeader";
 import { getActivityTypeList } from "@/actions/activity.actions";
 import { APP_CONSTANTS } from "@/lib/constants";
+import { Activity } from "lucide-react";
 import Loading from "../Loading";
 import { Button } from "../ui/button";
 import { RecordsCount } from "../RecordsCount";
@@ -57,6 +58,19 @@ function ActivityTypesContainer() {
           </ResponsiveCardHeader>
           <CardContent>
             {loading && <Loading />}
+            {!loading && activityTypes.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+                  <Activity className="h-6 w-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-semibold text-foreground">No activity types added yet</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Activity types used to track time and effort on applications will appear here.
+                  </p>
+                </div>
+              </div>
+            )}
             {activityTypes.length > 0 && (
               <>
                 <ActivityTypesTable

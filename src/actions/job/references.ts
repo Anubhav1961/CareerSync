@@ -3,12 +3,23 @@ import prisma from "@/lib/db";
 import { handleError } from "@/lib/utils";
 import { canonicalizeEntityValue } from "@/lib/jobs/canonicalize";
 import { requireUser } from "../shared";
+import { JOB_SOURCES, JOB_STATUSES } from "@/lib/constants";
 
 // JobStatus is global reference data with no createdBy column, so unlike every
 // other list here it is not scoped to the current user.
 export const getStatusList = async (): Promise<any | undefined> => {
   try {
-    const statuses = await prisma.jobStatus.findMany();
+    let statuses = await prisma.jobStatus.findMany();
+    if (statuses.length === 0) {
+      for (const status of JOB_STATUSES) {
+        await prisma.jobStatus.upsert({
+          where: { value: status.value },
+          update: {},
+          create: status,
+        });
+      }
+      statuses = await prisma.jobStatus.findMany();
+    }
     return statuses;
   } catch (error) {
     const msg = "Failed to fetch status list. ";
@@ -19,11 +30,25 @@ export const getStatusList = async (): Promise<any | undefined> => {
 export const getJobSourceList = async (): Promise<any | undefined> => {
   try {
     const user = await requireUser();
-    const list = await prisma.jobSource.findMany({
+    let list = await prisma.jobSource.findMany({
       where: {
         createdBy: user.id,
       },
     });
+    if (list.length === 0) {
+      await prisma.jobSource.createMany({
+        data: JOB_SOURCES.map((source) => ({
+          label: source.label,
+          value: source.value,
+          createdBy: user.id,
+        })),
+      });
+      list = await prisma.jobSource.findMany({
+        where: {
+          createdBy: user.id,
+        },
+      });
+    }
     return list;
   } catch (error) {
     const msg = "Failed to fetch job source list. ";

@@ -7,7 +7,7 @@ import { Location } from "@prisma/client";
 import JobLocationsTable from "./JobLocationsTable";
 import { getJobLocationsList } from "@/actions/jobLocation.actions";
 import Loading from "../Loading";
-import { Loader } from "lucide-react";
+import { Loader, MapPin } from "lucide-react";
 import { RecordsCount } from "../RecordsCount";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 
@@ -72,6 +72,19 @@ function JobLocationsContainer() {
           </ResponsiveCardHeader>
           <CardContent>
             {initialLoading && <Loading />}
+            {!initialLoading && locations.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+                  <MapPin className="h-6 w-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-semibold text-foreground">No job locations added yet</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Job locations linked to your job applications will appear here.
+                  </p>
+                </div>
+              </div>
+            )}
             {locations.length > 0 && (
               <>
                 <JobLocationsTable

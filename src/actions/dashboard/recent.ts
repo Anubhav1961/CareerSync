@@ -3,8 +3,8 @@ import prisma from "@/lib/db";
 import { requireUser } from "../shared";
 
 export const getRecentJobs = async (): Promise<any | undefined> => {
+  const user = await requireUser();
   try {
-    const user = await requireUser();
     const list = await prisma.job.findMany({
       where: {
         userId: user.id,
@@ -24,15 +24,14 @@ export const getRecentJobs = async (): Promise<any | undefined> => {
     });
     return list;
   } catch (error) {
-    const msg = "Failed to fetch jobs list. ";
-    console.error(msg, error);
-    throw new Error(msg);
+    console.error("Failed to fetch recent jobs", error);
+    return [];
   }
 };
 
 export const getRecentActivities = async () => {
+  const user = await requireUser();
   try {
-    const user = await requireUser();
     const list = await prisma.activity.findMany({
       where: {
         userId: user.id,
@@ -48,8 +47,7 @@ export const getRecentActivities = async () => {
     });
     return list;
   } catch (error) {
-    const msg = "Failed to fetch recent activities.";
-    console.error(msg, error);
-    throw new Error(msg);
+    console.error("Failed to fetch recent activities", error);
+    return [];
   }
 };

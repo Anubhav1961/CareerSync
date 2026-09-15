@@ -24,9 +24,15 @@ export default function ActivityCalendar({
   dataByYear: Record<string, any[]>;
 }) {
   const { resolvedTheme } = useTheme();
-  const [year, setYear] = useState(years.at(-1));
+  const currentYearStr = String(new Date().getFullYear());
+  const displayYears = years.length > 0 ? years : [currentYearStr];
+  const [selectedYear, setSelectedYear] = useState<string>(
+    years.at(-1) ?? currentYearStr,
+  );
+  const activeYear = selectedYear || currentYearStr;
+
   const borderColor = resolvedTheme === "light" ? "#ffffff" : "#0e1117";
-  const data = dataByYear[year ?? ""] ?? [];
+  const data = dataByYear[activeYear] ?? [];
   const hoursMap = Object.fromEntries(
     data.map((d) => [d.day, d.hours ?? 0]),
   );
@@ -35,12 +41,12 @@ export default function ActivityCalendar({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg text-green-600">Activity Calendar</CardTitle>
-          <Select value={year} onValueChange={setYear}>
+          <Select value={activeYear} onValueChange={setSelectedYear}>
             <SelectTrigger className="w-[100px]" aria-label="Select year">
               <SelectValue placeholder="Select year" />
             </SelectTrigger>
             <SelectContent>
-              {years.map((y) => (
+              {displayYears.map((y) => (
                 <SelectItem key={y} value={y}>
                   {y}
                 </SelectItem>
@@ -52,8 +58,8 @@ export default function ActivityCalendar({
       <CardContent className="h-[200px]">
         <ResponsiveCalendar
           data={data}
-          from={`${year}-04-02`}
-          to={`${year}-04-02`}
+          from={`${activeYear}-01-01`}
+          to={`${activeYear}-12-31`}
           emptyColor={resolvedTheme === "light" ? "#eeeeee" : "#30363d"}
           colors={["#90e0ef", "#48cae4", "#00b4d8", "#0096c7", "#0077b6"]}
           minValue={2}

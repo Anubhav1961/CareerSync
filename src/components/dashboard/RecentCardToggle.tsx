@@ -11,7 +11,7 @@ import { usePersistedTabIndex } from "@/hooks/usePersistedTabIndex";
 import { useActivity } from "@/context/ActivityContext";
 import { useActivitySwitchConfirm } from "@/hooks/useActivitySwitchConfirm";
 import { JobResponse } from "@/models/job.model";
-import { CirclePlay } from "lucide-react";
+import { Activity, Briefcase, CirclePlay } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 
@@ -110,8 +110,24 @@ export default function RecentCardToggle({
         </div>
       </CardHeader>
       <CardContent className="grid auto-rows-max gap-6 px-4 @3xl/main:min-h-0 @3xl/main:flex-1 @3xl/main:overflow-y-auto">
-        {activeIndex === 0
-          ? groupJobsByDate(jobs).map(([date, dateJobs]) => (
+        {activeIndex === 0 ? (
+          jobs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground gap-2">
+              <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center">
+                <Briefcase className="h-5 w-5 text-muted-foreground/70" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-foreground">No recent applications</p>
+                <p className="text-[11px] text-muted-foreground max-w-[220px]">
+                  Job applications you track will appear in this list.
+                </p>
+              </div>
+              <Button size="sm" variant="outline" className="mt-1 text-xs h-7" asChild>
+                <Link href="/dashboard/myjobs?add-job=true">Add Application</Link>
+              </Button>
+            </div>
+          ) : (
+            groupJobsByDate(jobs).map(([date, dateJobs]) => (
               <div key={date} className="grid gap-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   {date}
@@ -147,7 +163,22 @@ export default function RecentCardToggle({
                 ))}
               </div>
             ))
-          : groupActivitiesByDate(activities).map(([date, dateActivities]) => (
+          )
+        ) : (
+          activities.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground gap-2">
+              <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center">
+                <Activity className="h-5 w-5 text-muted-foreground/70" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-foreground">No recent activities</p>
+                <p className="text-[11px] text-muted-foreground max-w-[220px]">
+                  Activities and time spent on career tasks will appear here.
+                </p>
+              </div>
+            </div>
+          ) : (
+            groupActivitiesByDate(activities).map(([date, dateActivities]) => (
               <div key={date} className="grid gap-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   {date}
@@ -188,7 +219,9 @@ export default function RecentCardToggle({
                   ))}
                 </div>
               </div>
-            ))}
+            ))
+          )
+        )}
       </CardContent>
       {confirmDialog}
     </Card>

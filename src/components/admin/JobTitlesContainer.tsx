@@ -7,7 +7,7 @@ import { JobTitle } from "@prisma/client";
 import JobTitlesTable from "./JobTitlesTable";
 import { getJobTitleList } from "@/actions/jobtitle.actions";
 import Loading from "../Loading";
-import { Loader } from "lucide-react";
+import { Briefcase, Loader } from "lucide-react";
 import { RecordsCount } from "../RecordsCount";
 import { SearchInput } from "../SearchInput";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
@@ -97,6 +97,23 @@ function JobTitlesContainer() {
           </ResponsiveCardHeader>
           <CardContent>
             {initialLoading && <Loading />}
+            {!initialLoading && titles.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground gap-3">
+                <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground">
+                  <Briefcase className="h-6 w-6" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-semibold text-foreground">
+                    {searchTerm ? "No matching job titles found" : "No job titles added yet"}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    {searchTerm
+                      ? `No job titles match "${searchTerm}". Try a different search query.`
+                      : "Job titles linked to your job applications will appear here."}
+                  </p>
+                </div>
+              </div>
+            )}
             {titles.length > 0 && (
               <>
                 <JobTitlesTable
